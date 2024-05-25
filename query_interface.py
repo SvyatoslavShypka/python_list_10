@@ -37,3 +37,5 @@ if __name__ == "__main__":
         print("Usage: python query_interface.py <database_name>")
     else:
         query_interface(sys.argv[1])
+
+#  TEST lab_10_3 interface: python query_interface.py database_rowery

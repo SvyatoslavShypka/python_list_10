@@ -43,4 +43,15 @@ if __name__ == "__main__":
     else:
         load_data(sys.argv[1], sys.argv[2])
 
-# TEST lab_10_2 load data: python load_data.py historia_przejazdow_2021-01.csv database_rowery.sqlite3
+# TEST lab_10_2 load data: python load_data.py historia_przejazdow_2021-01.csv database_rowery
+# TEST lab_10_2 load data: python load_data.py historia_przejazdow_2021-02.csv database_rowery
+# TEST lab_10_2 load data: python load_data.py historia_przejazdow_2021-03.csv database_rowery
+# TEST lab_10_2 load data: python load_data.py historia_przejazdow_2021-04.csv database_rowery
+# TEST lab_10_2 load data: python load_data.py historia_przejazdow_2021-05.csv database_rowery
+# TEST lab_10_2 load data: python load_data.py historia_przejazdow_2021-06.csv database_rowery
+# TEST lab_10_2 load data: python load_data.py historia_przejazdow_2021-07.csv database_rowery
+# TEST lab_10_2 load data: python load_data.py historia_przejazdow_2021-08.csv database_rowery
+# TEST lab_10_2 load data: python load_data.py historia_przejazdow_2021-09.csv database_rowery
+# TEST lab_10_2 load data: python load_data.py historia_przejazdow_2021-10.csv database_rowery
+# TEST lab_10_2 load data: python load_data.py historia_przejazdow_2021-11.csv database_rowery
+# TEST lab_10_2 load data: python load_data.py historia_przejazdow_2021-12.csv database_rowery
