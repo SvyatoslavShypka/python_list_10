@@ -27,15 +27,15 @@ class Rental(Base):
     end_station = relationship('Station', foreign_keys=[end_station_id], back_populates='rentals_end')
 
 
-def main(database_name):
-    engine = create_engine(f'sqlite:///{database_name}.sqlite3')
+def main(nazwa_bazy_danych):
+    engine = create_engine(f'sqlite:///{nazwa_bazy_danych}.sqlite3')
     Base.metadata.create_all(engine)
-    print(f"Database '{database_name}.sqlite3' created successfully.")
+    print(f"Baza danych '{nazwa_bazy_danych}.sqlite3' została stworzona pomyślnie.")
 
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
-        print("Usage: python create_database.py <database_name>")
+        print("Używaj: python create_database.py <nazwa_bazy_danych>")
     else:
         main(sys.argv[1])
 

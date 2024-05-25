@@ -5,8 +5,9 @@ from datetime import datetime
 import sys
 from create_database import Base, Station, Rental
 
-def load_data(csv_file, database_name):
-    engine = create_engine(f'sqlite:///{database_name}.sqlite3')
+
+def load_data(csv_file, nazwa_bazy_danych):
+    engine = create_engine(f'sqlite:///{nazwa_bazy_danych}.sqlite3')
     Base.metadata.bind = engine
     DBSession = sessionmaker(bind=engine)
     session = DBSession()
@@ -39,7 +40,7 @@ def load_data(csv_file, database_name):
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:
-        print("Usage: python load_data.py <csv_file> <database_name>")
+        print("Używaj: python load_data.py <file_csv> <nazwa_bazy_danych>")
     else:
         load_data(sys.argv[1], sys.argv[2])
 
