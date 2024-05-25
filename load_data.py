@@ -3,40 +3,41 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from datetime import datetime
 import sys
-from create_database import Base, Station, Rental
+from create_database import Baza, Stacja, Wynajem
 
 
-def load_data(csv_file, nazwa_bazy_danych):
+def load_data(file_csv, nazwa_bazy_danych):
     engine = create_engine(f'sqlite:///{nazwa_bazy_danych}.sqlite3')
-    Base.metadata.bind = engine
+    Baza.metadata.bind = engine
     DBSession = sessionmaker(bind=engine)
     session = DBSession()
 
-    with open(csv_file, newline='', encoding='utf-8') as csvfile:
-        reader = csv.DictReader(csvfile)
-        for row in reader:
-            start_station = session.query(Station).filter_by(name=row['Stacja wynajmu']).first()
-            if not start_station:
-                start_station = Station(name=row['Stacja wynajmu'])
-                session.add(start_station)
+    with open(file_csv, newline='', encoding='utf-8') as file:
+        reader = csv.DictReader(file)
+        for wiersz in reader:
+            stacja_wynajmu = session.query(Stacja).filter_by(nazwa=wiersz['Stacja wynajmu']).first()
+            if not stacja_wynajmu:
+                stacja_wynajmu = Stacja(nazwa=wiersz['Stacja wynajmu'])
+                session.add(stacja_wynajmu)
                 session.commit()
 
-            end_station = session.query(Station).filter_by(name=row['Stacja zwrotu']).first()
-            if not end_station:
-                end_station = Station(name=row['Stacja zwrotu'])
-                session.add(end_station)
+            stacja_zwrotu = session.query(Stacja).filter_by(nazwa=wiersz['Stacja zwrotu']).first()
+            if not stacja_zwrotu:
+                stacja_zwrotu = Stacja(nazwa=wiersz['Stacja zwrotu'])
+                session.add(stacja_zwrotu)
                 session.commit()
 
-            rental = Rental(
-                bike_number=row['Numer roweru'],
-                start_time=datetime.strptime(row['Data wynajmu'], '%Y-%m-%d %H:%M:%S'),
-                end_time=datetime.strptime(row['Data zwrotu'], '%Y-%m-%d %H:%M:%S'),
-                duration=float(row['Czas trwania']),
-                start_station=start_station,
-                end_station=end_station
+            wynajem = Wynajem(
+                numer_roweru=wiersz['Numer roweru'],
+                data_wynajmu=datetime.strptime(wiersz['Data wynajmu'], '%Y-%m-%d %H:%M:%S'),
+                data_zwrotu=datetime.strptime(wiersz['Data zwrotu'], '%Y-%m-%d %H:%M:%S'),
+                czas_trwania=float(wiersz['Czas trwania']),
+                stacja_wynajmu=stacja_wynajmu,
+                stacja_zwrotu=stacja_zwrotu
             )
-            session.add(rental)
+            session.add(wynajem)
         session.commit()
+
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:

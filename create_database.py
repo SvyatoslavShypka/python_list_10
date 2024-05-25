@@ -3,33 +3,33 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 import sys
 
-Base = declarative_base()
+Baza = declarative_base()
 
 
-class Station(Base):
-    __tablename__ = 'stations'
+class Stacja(Baza):
+    __tablename__ = 'stacji'
     id = Column(Integer, primary_key=True)
-    name = Column(String, unique=True, nullable=False)
-    rentals_start = relationship('Rental', back_populates='start_station', foreign_keys='Rental.start_station_id')
-    rentals_end = relationship('Rental', back_populates='end_station', foreign_keys='Rental.end_station_id')
+    nazwa = Column(String, unique=True, nullable=False)
+    wynajem_z = relationship('Wynajem', back_populates='stacja_wynajmu', foreign_keys='Wynajem.stacja_wynajmu_id')
+    wynajem_do = relationship('Wynajem', back_populates='stacja_zwrotu', foreign_keys='Wynajem.stacja_zwrotu_id')
 
 
-class Rental(Base):
-    __tablename__ = 'rentals'
+class Wynajem(Baza):
+    __tablename__ = 'wynajmy'
     id = Column(Integer, primary_key=True)
-    bike_number = Column(String, nullable=False)
-    start_time = Column(DateTime, nullable=False)
-    end_time = Column(DateTime, nullable=False)
-    duration = Column(Float, nullable=False)
-    start_station_id = Column(Integer, ForeignKey('stations.id'), nullable=False)
-    end_station_id = Column(Integer, ForeignKey('stations.id'), nullable=False)
-    start_station = relationship('Station', foreign_keys=[start_station_id], back_populates='rentals_start')
-    end_station = relationship('Station', foreign_keys=[end_station_id], back_populates='rentals_end')
+    numer_roweru = Column(String, nullable=False)
+    data_wynajmu = Column(DateTime, nullable=False)
+    data_zwrotu = Column(DateTime, nullable=False)
+    czas_trwania = Column(Float, nullable=False)
+    stacja_wynajmu_id = Column(Integer, ForeignKey('stacji.id'), nullable=False)
+    stacja_zwrotu_id = Column(Integer, ForeignKey('stacji.id'), nullable=False)
+    stacja_wynajmu = relationship('Stacja', foreign_keys=[stacja_wynajmu_id], back_populates='wynajem_z')
+    stacja_zwrotu = relationship('Stacja', foreign_keys=[stacja_zwrotu_id], back_populates='wynajem_do')
 
 
 def main(nazwa_bazy_danych):
     engine = create_engine(f'sqlite:///{nazwa_bazy_danych}.sqlite3')
-    Base.metadata.create_all(engine)
+    Baza.metadata.create_all(engine)
     print(f"Baza danych '{nazwa_bazy_danych}.sqlite3' została stworzona pomyślnie.")
 
 

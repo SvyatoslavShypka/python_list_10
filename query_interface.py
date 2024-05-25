@@ -1,62 +1,69 @@
 from sqlalchemy import create_engine, func
 from sqlalchemy.orm import sessionmaker
 import sys
-from create_database import Base, Station, Rental
+from create_database import Baza, Stacja, Wynajem
 
 
-def query_interface(nazwa_bazy_danych):
+def interfejs(nazwa_bazy_danych):
     engine = create_engine(f'sqlite:///{nazwa_bazy_danych}.sqlite3')
-    Base.metadata.bind = engine
+    Baza.metadata.bind = engine
     DBSession = sessionmaker(bind=engine)
     session = DBSession()
 
-    stations = session.query(Station).all()
+    stacji = session.query(Stacja).all()
     print("Dostępne stacji:")
-    for station in stations:
-        print(station.name)
+    for station in stacji:
+        print(station.nazwa)
 
-    selected_station_name = input("Wprowadź stacje dla raportu: ")
-    selected_station = session.query(Station).filter_by(name=selected_station_name).first()
+    nazwa_wybranej_stacji = input("Wprowadź stacje dla raportu: ")
+    wybrana_stacja = session.query(Stacja).filter_by(nazwa=nazwa_wybranej_stacji).first()
 
-    if selected_station:
-        avg_duration_start = session.query(func.avg(Rental.duration)).filter_by(start_station=selected_station).scalar()
-        avg_duration_end = session.query(func.avg(Rental.duration)).filter_by(end_station=selected_station).scalar()
-        unique_bikes_count = session.query(func.count(func.distinct(Rental.bike_number))).filter_by(end_station=selected_station).scalar()
+    if wybrana_stacja:
+        sredni_czas_z = session.query(func.avg(Wynajem.czas_trwania))\
+            .filter_by(stacja_wynajmu=wybrana_stacja).scalar()
+        sredni_czas_do = session.query(func.avg(Wynajem.czas_trwania))\
+            .filter_by(stacja_zwrotu=wybrana_stacja).scalar()
+        liczba_roznych_rowerow = session.query(func.count(func.distinct(Wynajem.numer_roweru)))\
+            .filter_by(stacja_zwrotu=wybrana_stacja).scalar()
 
-        print(f"średni czas trwania przejazdu rozpoczynanego na danej stacji {selected_station.name}: {avg_duration_start:.2f} minut")
-        print(f"średni czas trwania przejazdu kończonego na danej stacji {selected_station.name}: {avg_duration_end:.2f} minut")
-        print(f"liczbę różnych rowerów parkowanych na danej stacji {selected_station.name}: {unique_bikes_count}")
+        print(f"średni czas trwania przejazdu rozpoczynanego z danej stacji {wybrana_stacja.nazwa}"
+              f": {sredni_czas_z:.2f} minut")
+        print(f"średni czas trwania przejazdu kończonego na danej stacji {wybrana_stacja.nazwa}"
+              f": {sredni_czas_do:.2f} minut")
+        print(f"liczbę różnych rowerów parkowanych na danej stacji {wybrana_stacja.nazwa}: {liczba_roznych_rowerow}")
 
         # Liczba całkowita wynajmów ze stacji:
-        total_rentals_start = session.query(func.count(Rental.id)).filter_by(start_station=selected_station).scalar()
-        print(f"Liczba całkowita wynajmów ze stacji {selected_station.name}: {total_rentals_start}")
+        liczba_calkowita_z = session.query(func.count(Wynajem.id)).filter_by(stacja_wynajmu=wybrana_stacja).scalar()
+        print(f"Liczba całkowita wynajmów ze stacji {wybrana_stacja.nazwa}: {liczba_calkowita_z}")
 
-        # Most frequent route from the selected station
-        most_frequent_route = session.query(
-            Rental.end_station_id,
-            func.count(Rental.id).label('route_count')
+        # Napopularniejszy kierunek z tej stacji
+        napopularniejszy_kierunek = session.query(
+            Wynajem.stacja_zwrotu_id,
+            func.count(Wynajem.id).label('ilosc_kierunkow')
         ).filter(
-            Rental.start_station == selected_station
+            Wynajem.stacja_wynajmu == wybrana_stacja
         ).group_by(
-            Rental.end_station_id
+            Wynajem.stacja_zwrotu_id
         ).order_by(
-            func.count(Rental.id).desc()
+            func.count(Wynajem.id).desc()
         ).first()
 
-        if most_frequent_route:
-            most_frequent_end_station = session.query(Station).filter_by(id=most_frequent_route.end_station_id).first()
+        if napopularniejszy_kierunek:
+            napopularniejszy_kierunek_do = session.query(Stacja).filter_by(id=napopularniejszy_kierunek.stacja_zwrotu_id).first()
             print(
-                f"Najczęśtszy wynajem z tej stacji {selected_station.name} jest do stacji {most_frequent_end_station.name} z {most_frequent_route.route_count} wynajmów.")
+                f"Napopularniejszy kierunek z tej stacji {wybrana_stacja.nazwa} jest do stacji "
+                f"{napopularniejszy_kierunek_do.nazwa}. Wynajmów było: {napopularniejszy_kierunek.ilosc_kierunkow}")
         else:
             print("Z tej stacji nie było wynajmów.")
 
     else:
         print("Takiej stacji nie ma")
 
+
 if __name__ == "__main__":
     if len(sys.argv) != 2:
         print("Używaj: python query_interface.py <nazwa_bazy_danych>")
     else:
-        query_interface(sys.argv[1])
+        interfejs(sys.argv[1])
 
-#  TEST lab_10_3 interface: python query_interface.py database_rowery
+#  TEST lab_10_3 interfejs: python query_interface.py database_rowery
