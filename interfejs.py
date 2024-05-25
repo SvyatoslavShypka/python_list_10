@@ -62,8 +62,8 @@ def interfejs(nazwa_bazy_danych):
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
-        print("Używaj: python query_interface.py <nazwa_bazy_danych>")
+        print("Używaj: python interfejs.py <nazwa_bazy_danych>")
     else:
         interfejs(sys.argv[1])
 
-#  TEST lab_10_3 interfejs: python query_interface.py database_rowery
+#  TEST lab_10_3 interfejs: python interfejs.py database_rowery
